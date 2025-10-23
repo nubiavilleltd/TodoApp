@@ -49,7 +49,7 @@
 //     }
 
 //     const data = await response.json();
-    
+
 //     return data.d.results.map((item: any) => ({
 //       id: item.Id.toString(),
 //       title: item.Title,
@@ -272,21 +272,45 @@ export async function searchUsers(
 }
 
 /**
+ *
+ * @param token
+ * @returns
+ */
+export async function getCurrentUser(token: string) {
+  const response = await fetch(`${SITE_URL}/_api/web/currentuser`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json;odata=verbose",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get current user: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return {
+    id: data.d.Id,
+    title: data.d.Title,
+    email: data.d.Email,
+  };
+}
+
+/**
  * Upload file to document library
  */
-export async function uploadFile(
-  token: string,
-  file: File
-): Promise<string> {
+export async function uploadFile(token: string, file: File): Promise<string> {
   try {
     const digest = await getFormDigest(token);
-    
+
     // Read file as array buffer
     const arrayBuffer = await file.arrayBuffer();
-    
+
     // Upload file
-    const uploadUrl = `${SITE_URL}/_api/web/lists/getbytitle('${DOCUMENT_LIBRARY}')/RootFolder/Files/add(url='${encodeURIComponent(file.name)}',overwrite=true)`;
-    
+    const uploadUrl = `${SITE_URL}/_api/web/lists/getbytitle('${DOCUMENT_LIBRARY}')/RootFolder/Files/add(url='${encodeURIComponent(
+      file.name
+    )}',overwrite=true)`;
+
     const response = await fetch(uploadUrl, {
       method: "POST",
       headers: {
@@ -297,7 +321,7 @@ export async function uploadFile(
       body: arrayBuffer,
     });
 
-    console.log({ "response": response});
+    console.log({ response: response });
 
     if (!response.ok) {
       throw new Error(`Failed to upload file: ${response.statusText}`);
@@ -316,8 +340,19 @@ export async function uploadFile(
  */
 export async function fetchTodos(token: string): Promise<TodoItem[]> {
   try {
+    const userId = await getCurrentUser(token);
+
+    // const response = await fetch(
+    //   `${API_BASE}/items?$select=Id,Title,Description,Status,ImagePath,ApproverId,Approver/Id,Approver/Title,Approver/EMail&$expand=Approver`,
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //       Accept: "application/json;odata=verbose",
+    //     },
+    //   }
+    // );
     const response = await fetch(
-      `${API_BASE}/items?$select=Id,Title,Description,Status,ImageLink,ApproverId,Approver/Id,Approver/Title,Approver/EMail&$expand=Approver`,
+      `${API_BASE}/items?$filter=Author/Id eq ${userId}&$select=Id,Title,Description,Status,ImagePath,ApproverId,Approver/Id,Approver/Title,Approver/EMail&$expand=Author,Approver`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -339,7 +374,7 @@ export async function fetchTodos(token: string): Promise<TodoItem[]> {
       title: item.Title,
       description: item.Description || "",
       status: (item.Status || "Pending") as TodoStatus,
-      imageLink: item.ImageLink || undefined,
+      imagePath: item.ImagePath || undefined,
       approver: item.Approver
         ? {
             id: item.Approver.Id?.toString(),
@@ -358,8 +393,8 @@ export async function fetchTodos(token: string): Promise<TodoItem[]> {
  * Create a new todo item
  */
 export async function createTodo(
-token: string,
-todo: Omit<TodoItem, "id">
+  token: string,
+  todo: Omit<TodoItem, "id">
 ): Promise<TodoItem> {
   try {
     const digest = await getFormDigest(token);
@@ -398,13 +433,15 @@ todo: Omit<TodoItem, "id">
       const errorText = await response.text();
       console.error("Error response:", errorText);
       console.error("Request was:", body);
-      throw new Error(`Failed to create todo: ${response.statusText} - ${errorText}`);
+      throw new Error(
+        `Failed to create todo: ${response.statusText} - ${errorText}`
+      );
     }
 
     const data = await response.json();
 
     console.log("Created Todo Data:", data);
-    
+
     let approverData = todo.approver;
     if (data.d.Approver) {
       approverData = {
@@ -419,7 +456,7 @@ todo: Omit<TodoItem, "id">
       title: data.d.Title,
       description: data.d.Description || "",
       status: (data.d.Status || "Pending") as TodoStatus,
-      imagePath: data.d.ImageLink || undefined,
+      imagePath: data.d.ImagePath || undefined,
       approver: approverData,
     };
   } catch (error) {
@@ -464,9 +501,12 @@ export async function updateTodo(
     if (updates.description !== undefined)
       updateData.Description = updates.description;
     if (updates.status !== undefined) updateData.Status = updates.status;
-    if (updates.imagePath !== undefined) updateData.ImageLink = updates.imagePath;
+    if (updates.imagePath !== undefined)
+      updateData.ImagePath = updates.imagePath;
     if (updates.approver !== undefined) {
-      updateData.ApproverId = updates.approver ? parseInt(updates.approver.id) : null;
+      updateData.ApproverId = updates.approver
+        ? parseInt(updates.approver.id)
+        : null;
     }
 
     const response = await fetch(`${API_BASE}/items(${id})`, {
