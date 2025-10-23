@@ -1,14 +1,19 @@
 import type { Configuration, PopupRequest } from "@azure/msal-browser";
 
+const isDev = import.meta.env.MODE === "development";
+
 export const msalConfig: Configuration = {
   auth: {
     clientId: import.meta.env.VITE_AZURE_CLIENT_ID,
-    authority:
-      `https://login.microsoftonline.com/${import.meta.env.VITE_AZURE_TENANT_ID}`,
-    redirectUri: "https://todo-app-mu-ten-59.vercel.app",
+    authority: `https://login.microsoftonline.com/${
+      import.meta.env.VITE_AZURE_TENANT_ID
+    }`,
+    redirectUri: isDev
+      ? "http://localhost:5173"
+      : "https://todo-app-mu-ten-59.vercel.app",
   },
   cache: {
-    cacheLocation: "localStorage",
+    cacheLocation: "sessionStorage",
     storeAuthStateInCookie: false,
   },
 };
