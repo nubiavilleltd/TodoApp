@@ -5,7 +5,7 @@ export const msalConfig: Configuration = {
     clientId: import.meta.env.VITE_AZURE_CLIENT_ID,
     authority:
       `https://login.microsoftonline.com/${import.meta.env.VITE_AZURE_TENANT_ID}`,
-    redirectUri: "http://localhost:5173",
+    redirectUri: "https://todo-app-mu-ten-59.vercel.app",
   },
   cache: {
     cacheLocation: "localStorage",
