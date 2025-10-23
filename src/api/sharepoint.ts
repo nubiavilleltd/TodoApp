@@ -297,6 +297,8 @@ export async function uploadFile(
       body: arrayBuffer,
     });
 
+    console.log({ "response": response});
+
     if (!response.ok) {
       throw new Error(`Failed to upload file: ${response.statusText}`);
     }
