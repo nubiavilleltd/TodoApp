@@ -341,7 +341,8 @@ export async function uploadFile(token: string, file: File): Promise<string> {
 export async function fetchTodos(token: string): Promise<TodoItem[]> {
   try {
     const userId = await getCurrentUser(token);
-
+    const ID = userId.id;
+    
     // const response = await fetch(
     //   `${API_BASE}/items?$select=Id,Title,Description,Status,ImagePath,ApproverId,Approver/Id,Approver/Title,Approver/EMail&$expand=Approver`,
     //   {
@@ -352,7 +353,7 @@ export async function fetchTodos(token: string): Promise<TodoItem[]> {
     //   }
     // );
     const response = await fetch(
-      `${API_BASE}/items?$filter=Author/Id eq ${userId}&$select=Id,Title,Description,Status,ImagePath,ApproverId,Approver/Id,Approver/Title,Approver/EMail&$expand=Author,Approver`,
+      `${API_BASE}/items?$filter=Author/Id eq ${ID}&$select=Id,Title,Description,Status,ImagePath,Author/Id,Author/Title,ApproverId,Approver/Id,Approver/Title,Approver/EMail&$expand=Author,Approver`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
