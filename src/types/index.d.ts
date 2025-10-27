@@ -1,6 +1,7 @@
 // Update your TodoItem type to match the statuses you're using in SharePoint
 
-export type TodoStatus = "Pending" | "In Progress" | "Completed";
+export type TodoStatus = "Pending" | "In Progress" | "Completed" | "Cancelled";
+export type ApprovalStatus = "Approved" | "Rejected" | "Pending Approval";
 
 export interface TodoItem {
   id: string;
@@ -13,6 +14,12 @@ export interface TodoItem {
     title: string; // Display name
     email: string;
   };
+  author?: {
+    id: string;
+    title: string; // Display name
+    email: string;
+  },
+  approvalStatus: ApprovalStatus
 }
 
 export interface SharePointUser {
