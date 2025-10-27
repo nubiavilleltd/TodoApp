@@ -146,7 +146,7 @@ function TodoForm({
       setSelectedFile(null);
       setSelectedApprover(null);
       setUserSearch("");
-      setShowForm((prev) => !prev); 
+      setShowForm(false); 
       navigate("/", { replace: true })
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
