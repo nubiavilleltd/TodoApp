@@ -7,7 +7,7 @@ import {
   updateTodo,
 } from "../api/sharepoint";
 import { useAuth } from "../auth/AuthProvider";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 interface TodoFormProps {
   setTodos: React.Dispatch<React.SetStateAction<TodoItem[]>>;
@@ -16,7 +16,7 @@ interface TodoFormProps {
   setError: React.Dispatch<React.SetStateAction<string | null>>;
   todos: TodoItem[];
   rid: string | null;
-  setShowForm: React.Dispatch<React.SetStateAction<boolean>>
+  setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function TodoForm({
@@ -26,7 +26,7 @@ function TodoForm({
   todos,
   request,
   rid,
-  setShowForm
+  setShowForm,
 }: TodoFormProps) {
   const [newTodo, setNewTodo] = useState({
     title: "",
@@ -42,8 +42,8 @@ function TodoForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { account } = useAuth();
   const [isRequestOwner, setIsRequestOwner] = useState(false);
-  const [isGetItemRequest, setIsGetItemRequest] = useState(false)
-  const navigate = useNavigate();
+  const [isGetItemRequest, setIsGetItemRequest] = useState(false);
+  // const navigate = useNavigate();
 
   useEffect(() => {
     if (rid && request) {
@@ -95,10 +95,10 @@ function TodoForm({
       account?.username &&
       request.author?.email.toLowerCase() === account.username.toLowerCase()
     ) {
-        console.log(true)
+      console.log(true);
       setIsRequestOwner(true);
     } else {
-        console.log(false)
+      console.log(false);
       setIsRequestOwner(false);
     }
   }, [request, account]);
@@ -138,7 +138,7 @@ function TodoForm({
               email: selectedApprover.EMail,
             }
           : undefined,
-        approvalStatus: "Pending Approval"
+        approvalStatus: "Pending Approval",
       });
 
       setTodos([...todos, createdTodo]);
@@ -146,8 +146,8 @@ function TodoForm({
       setSelectedFile(null);
       setSelectedApprover(null);
       setUserSearch("");
-      setShowForm(false); 
-      navigate("/", { replace: true })
+      setShowForm(false);
+      // navigate("/", { replace: true })
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
       console.error("Error creating todo:", err);
@@ -208,11 +208,13 @@ function TodoForm({
     }
   };
 
-
-
-  if (rid && !isRequestOwner) {
-    setIsGetItemRequest(true)
-  }
+  useEffect(() => {
+    if (rid && !isRequestOwner) {
+      setIsGetItemRequest(true);
+    } else {
+      setIsGetItemRequest(false);
+    }
+  }, [rid, isRequestOwner]);
 
   return (
     <>
