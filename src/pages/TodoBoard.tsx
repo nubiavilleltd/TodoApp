@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { TodoItem } from "../types";
 import { useAuth } from "../auth/AuthProvider";
 import { fetchTodos, fetchTodoById } from "../api/sharepoint";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import TodoForm from "../components/TodoForm";
 import ApprovalSection from "../components/ApproverSection";
 import { TodoList } from "../components/TodoList";
@@ -21,9 +21,9 @@ export const TodoBoard: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // const params = useSearchParams(location.search);
-    const [searchParams] = useSearchParams();
-    const ridParam = searchParams.get("rid");
+    const params = new URLSearchParams(location.search);
+    // const [searchParams] = useSearchParams();
+    const ridParam = params.get("rid");
     if (ridParam) {
       setRid(ridParam);
       setShowForm(true);
