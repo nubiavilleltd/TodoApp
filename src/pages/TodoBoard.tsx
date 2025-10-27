@@ -13,12 +13,12 @@ export const TodoBoard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const location = useLocation();
   const [rid, setRid] = useState<string | null>(null);
   const [request, setRequest] = useState<TodoItem | null>(null);
   const [isApprover, setIsApprover] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation()
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
