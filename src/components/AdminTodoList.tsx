@@ -72,6 +72,12 @@ export const AdminTodoList: React.FC = () => {
               <p className="text-xs text-gray-500">
                 Approver: <span className="text-purple-400">{todo.approver?.title || "—"}</span>
               </p>
+              <p className="text-xs text-gray-500">
+                Approval Status: <span className={`${todo.approvalStatus === 'Approved' ? 'text-green-400' : todo.approvalStatus === 'Rejected' ? 'text-red-400' : 'text-yellow-400'}`}>{todo.approvalStatus || "—"}</span>
+              </p>
+              <p className="text-xs text-gray-500">
+                Todo Status: <span className={`${todo.status === 'Completed' ? 'text-green-400' : todo.status === 'Cancelled' ? 'text-red-400' : todo.status === 'In Progress' ? 'text-blue-400' : 'text-yellow-400'}`}>{todo.status || "—"}</span>
+              </p>
             </div>
 
             <button
