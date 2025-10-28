@@ -237,7 +237,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   );
 
   const myTodos = todos.filter(
-    (t) => !approvalTodos.some((a) => a.id === t.id) && t.approvalStatus !== 'Approved'
+    (t) => !approvalTodos.some((a) => a.id === t.id)
   );
 
   if (todos.length === 0) {
